@@ -1,0 +1,160 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "RealFlight Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "preLaunchTask": "build plane",
+            "cwd": "${workspaceFolder}/.vscode/flightaxis", // You need to make this directory manually
+            "program": "${workspaceFolder}/build/sitl/bin/arduplane",
+            "args": [
+                "-M", "flightaxis:${env:wslhost}",
+                // "-O", "45.69427,-118.83401,454.09,0", // Pendleton
+                "-O", "40.0594626,-88.5513292,206.0,0",  // Eli Field
+                // "-O", "-33.6632464,150.8476093,8.6,0",  // Riverstone
+                // "-O", "36.8325082,-2.8512096,735,0", // AutoTest Hill
+                "--serial0", "tcp:0", // Prevents pausing for connection
+                // "--serial0", "udpclient:${env:wslhost}:14450",
+                // "--defaults", "${workspaceFolder}/.vscode/Convergence_RealFlight_4.5.param",
+                "--defaults", "${workspaceFolder}/build/sitl/volanti-realflight.parm",
+                // "--wipe",
+            ],
+            "miDebuggerPath": "/usr/bin/gdb",
+            "postRemoteConnectCommands": [
+                {
+                    "description": "Set breakpoint at AP_HAL::panic",
+                    "text": "-break-insert AP_HAL::panic",
+                    "ignoreFailures": false
+                }
+            ],
+            "MIMode": "gdb",
+            "launchCompleteCommand": "exec-run"
+        },
+        {
+            "name": "Headless Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "preLaunchTask": "build plane",
+            "cwd": "${workspaceFolder}/.vscode/quadplane", // You need to make this directory manually
+            "program": "${workspaceFolder}/build/sitl/bin/arduplane",
+            "args": [
+                "-M", "quadplane",
+                // "-O", "45.69427,-118.83401,454.09,0", // Pendleton
+                "-O", "40.0594626,-88.5513292,206.0,0",  // Eli Field
+                // "-O", "-33.6632464,150.8476093,8.6,0",  // Riverstone
+                // "-O", "36.8325082,-2.8512096,735,0", // AutoTest Hill
+                "--defaults", "${workspaceFolder}/Tools/autotest/default_params/quadplane.parm",
+                // "--defaults", "${workspaceFolder}/build/sitl/volanti-headless.parm",
+                // "--speedup", "10",
+                "--serial0", "tcp:0", // Prevents pausing for connection
+                // "--serial1", "udpclient:${env:wslhost}:14451",
+                // "--serial2", "udpclient:${env:wslhost}:12345",
+                // "--serial2", "tcp:3",
+                // "--serial5", "udp:*:22222",
+                "--gimbal",
+                "--wipe",
+            ],
+            "miDebuggerPath": "/usr/bin/gdb",
+            "sourceFileMap": {
+                "${workspaceFolder}": {
+                    "editorPath": "${workspaceFolder}",
+                    "useForBreakpoints": "true"
+                }
+            },
+            "postRemoteConnectCommands": [
+                {
+                    "description": "Set breakpoint at AP_HAL::panic",
+                    "text": "-break-insert AP_HAL::panic",
+                    "ignoreFailures": false
+                }
+            ],
+            "MIMode": "gdb",
+            "launchCompleteCommand": "exec-run"
+        },
+        {
+            "name": "Autotest",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/Tools/autotest/autotest.py",
+            "args": [
+                // "--no-clean",
+                // "build.Plane",
+                // "--frame=flightaxis-autotest:${env:wslhost}",
+                // "--speedup=1",
+                // "--home=45.69427,-118.83401,454.09,0"
+                // "test.QuadPlane.GenerateExampleLog",
+                // "test.QuadPlane.DCMClimbRate",
+                // "test.Plane.FailsafeDuringLanding",
+                "build.Copter",
+                "build.SITLPeriphUniversal",
+                "test.CAN"
+            ],
+        },
+        {
+            "name": "Replay",
+            "type": "cppdbg",
+            "request": "launch",
+            "preLaunchTask": "build replay",
+            "cwd": "${workspaceFolder}/.vscode/replay", // You need to make this directory manually
+            "program": "${workspaceFolder}/build/sitl/tool/Replay",
+            "args": [
+                "2-Toilet_Bowl_landing.BIN",
+                // "--parm", "EK3_AFFINITY=0",
+            ],
+            "miDebuggerPath": "/usr/bin/gdb",
+            "sourceFileMap": {
+                "${workspaceFolder}": {
+                    "editorPath": "${workspaceFolder}",
+                    "useForBreakpoints": "true"
+                }
+            },
+            "postRemoteConnectCommands": [
+                {
+                    "description": "Set breakpoint at AP_HAL::panic",
+                    "text": "-break-insert AP_HAL::panic",
+                    "ignoreFailures": false
+                }
+            ],
+            "MIMode": "gdb",
+            "launchCompleteCommand": "exec-run"
+        },
+        {
+            "name": "CarbonixF405 Debug",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceFolder}/build/CarbonixF405/bin/AP_Periph",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": ["${workspaceFolder}/Tools/debug/openocd.cfg"],
+            "searchDir": [],
+            "postAttachCommands": [
+                "b AP_HAL::panic",
+                "b HardFault_Handler",
+                "b chSysHalt",
+                "c",
+            ],
+            "showDevDebugOutput":"none",
+        },
+        {
+            "name": "CubeOrange Debug",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceFolder}/build/CubeOrange-Volanti/bin/arduplane",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": ["${workspaceFolder}/Tools/debug/openocd-h7.cfg"],
+            "searchDir": [],
+            "postAttachCommands": [
+                "b AP_HAL::panic",
+                "b HardFault_Handler",
+                "c",
+            ],
+            "showDevDebugOutput":"none",
+        },
+    ]
+}
