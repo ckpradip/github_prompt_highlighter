@@ -96,6 +96,29 @@
             ],
         },
         {
+            "name": "Debug Crash Dump",
+            "type": "cppdbg",
+            "request": "launch",
+            "variables": {
+                "ELF_FILE": "build/CubeOrange-Ottano/bin/arduplane",
+                "CRASH_DUMP": "crash_dump_O10_2024_12.bin"
+            },
+            "program": "${workspaceFolder}/${ELF_FILE}",
+            "miDebuggerPath": "arm-none-eabi-gdb",
+            "miDebuggerArgs": "-nx -ex \"set target-charset ASCII\" -ex \"target remote | ${workspaceFolder}/modules/CrashDebug/bins/lin64/CrashDebug --elf ${workspaceFolder}/${ELF_FILE} --dump ${workspaceFolder}/${CRASH_DUMP}\"",
+            "cwd": "${workspaceFolder}",
+            "externalConsole": false,
+            "stopAtEntry": false,
+            "setupCommands": [
+                {
+                    "description": "Enable pretty printing",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "args": [],
+        },
+        {
             "name": "Replay",
             "type": "cppdbg",
             "request": "launch",
